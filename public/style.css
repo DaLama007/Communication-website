@@ -1,0 +1,131 @@
+body {
+  margin: 0;
+  height: 100vh;
+  background-color: #000;
+  color: #0f0;
+  font-family: 'Courier New', Courier, monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chat-container {
+  width: 600px;
+  height: 400px;
+  background: #000;
+  border: 2px solid #0f0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.chat-box {
+  flex: 1;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.message {
+  margin: 2px 0;
+}
+
+/* Input container with prompt */
+.input-container {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.prompt {
+  color: #0f0;
+  font-weight: bold;
+  user-select: none;
+  margin-right: 5px;
+}
+
+/* Terminal style input */
+.msginput {
+  background: transparent;
+  border: none;
+  color: #0f0;
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+  flex: 1;
+  caret-color: #0f0;
+  /* Blinking cursor effect */
+  animation: blink 1s steps
+}
+.formelement {
+  background: transparent;
+  border: none;
+  color: #0f0;
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+  caret-color: #0f0;
+  /* Blinking cursor effect */
+  animation: blink 1s steps
+}
+
+.button {
+  background: transparent;
+  border: none;
+  color: #0f0;               /* Bright green */
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 5px;
+  user-select: none;
+
+  outline: none;
+  transition: color 0.2s ease;
+}
+
+.button:hover,
+.button:focus {
+  color: #6f6;               /* Slightly lighter green on hover/focus */
+  text-shadow: 0 0 5px #0f0;
+  outline: none;
+}
+.ascii {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  color: #0f0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  white-space: pre;
+  pointer-events: none; /* makes it unclickable if needed */
+}
+
+.ascii {
+  opacity: 0;
+  animation: fadeIn 2s ease-in-out forwards;
+  white-space: pre;
+  font-family: 'Courier New', monospace;
+  color: #0f0;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+.blink {
+  animation: blink 1s step-start infinite;
+}
+.blinklong {
+  animation: blink 4s step-start infinite;
+}
+.signupelement{
+  color:fuchsia
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
