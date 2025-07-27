@@ -1,8 +1,8 @@
-document.getElementById('login-button').addEventListener('click', (event) => {
+document.getElementById('signup-button').addEventListener('click', (event) => {
 
     let usernameInput = document.getElementById('usernameInput').value.trim();
     let passwordInput = document.getElementById('passwordInput').value.trim();
-    fetch('http://localhost:3000/login', {
+    fetch('http://localhost:3000/signup', {
         method: 'POST',
         body: JSON.stringify({ username:usernameInput, password:passwordInput }),
         headers: { 'Content-Type': 'application/json' }
@@ -16,7 +16,7 @@ document.getElementById('login-button').addEventListener('click', (event) => {
             console.log('user')
         }
         else{
-            console.log('False Username/password')
+            console.log('False Username/password or user doesnt exist')
         }
 
     })
