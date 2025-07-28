@@ -24,6 +24,7 @@ body {
   flex: 1;
   overflow-y: auto;
   white-space: pre-wrap;
+  overflow:scroll;
 }
 
 .message {
@@ -128,4 +129,63 @@ body {
   50% {
     opacity: 0;
   }
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #000;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #0f0;
+  border-radius:40px;
+  border: 1px solid transparent;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #6f6;
+}
+.sender {
+  color: #00ffff; /* Cyan for usernames */
+  font-weight: bold;
+}
+
+.timestamp {
+  color: #777;
+  font-size: 0.8em;
+}
+
+#chat-terminal, #command-terminal {
+  background-color: #000;
+  color: #0f0;
+  font-family: 'Courier New', monospace;
+  padding: 20px;
+  margin: 10px;
+  border: 2px solid #0f0;
+  border-radius: 5px;
+  height: 300px;
+  overflow-y: auto;
+}
+
+#command-input {
+  background-color: #000;
+  color: #0f0;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 1em;
+}
+
+#command-input::placeholder {
+  color: #0f0;
+  opacity: 0.5;
 }

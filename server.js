@@ -60,3 +60,17 @@ app.post('/signup', (req, res) => {
     res.json({ success: true });
   }
 });
+app.post('/global', (req, res) => {
+  const { username, content} = req.body;
+
+  const insert = db.prepare('INSERT INTO messages (username, content) VALUES (?, ?)');
+  insert.run(username, content);
+  res.json({ success: true });
+  }
+);
+app.post('/get-global', (req, res) => {
+
+  const messages = db.prepare('SELECT * FROM messages').all();
+  res.json({ success: true , messages});
+  }
+);

@@ -30,7 +30,7 @@
          '8JGS88888'       </pre>
     </div>
     <div class="chat-container">
-        <div id="chat-box" class="chat-box"></div>
+        <div id="chat-box" class="chat-box" onload="loadMessages()"></div>
         <div class="input-container">
             <span class="prompt">&gt;</span>
             <input id="msginput" class="msginput" type="text" autocomplete="off" autofocus />
@@ -38,6 +38,11 @@
             <a id="signup-pagebutton" class="button" href="signup.html">[Signup]</a>
             <a id="logout-button" class="button" href= "login.html">[Logout]</a> 
         </div>
+    </div>
+    <div id="command-terminal">
+        <div id="command-output"></div>
+        <span class="prompt">&gt;</span>
+        <input type="text" id="command-input" placeholder="Enter command..." autofocus />
     </div>
 
     <script src="script.js"></script>
