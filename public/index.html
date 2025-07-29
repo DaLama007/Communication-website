@@ -9,43 +9,51 @@
 </head>
 
 <body>
-    <div class="'ascii">
-        <pre class="ascii">         _o8888888o_
-      .o<span class="blink">8</span>88' ...  '888o.
-   .o88'  :::;(;:::  '8<span class="blink">8</span>o.
-  ,88'  .::;.) );:::.  '88,
- ,<span class="blink">8</span>8'  :::;`(,' (,;:::  '88,
-,88'  :<span class="blink">:</span>:;;). (, (';:::  '88,
-88'   :::;( ) ; ' );;::   '88
-8<span class="blink">8</span>    '::;')_,_)_(`;::'    88
-88      '::[_____]::'      88
-<span class="blink">8</span>8          \_ _/          88
-88           |#|_          88
-88,     __.-'(__ )        ,88
-'<span class="blink">8</span>8,     '-. \___ )      ,88'
- '88,     _.\_)__ )     ,<span class="blink">8</span>8'
-  '88o,  _   (__ )    ,o<span class="blink">8</span>8'
-    '8<span class="blink">8</span>o, `'-\#/'   ,o88'
-      '888o,_   _,o888'
-         '8JGS88888'       </pre>
-    </div>
-    <div class="chat-container">
-        <div id="chat-box" class="chat-box" onload="loadMessages()"></div>
-        <div class="input-container">
-            <span class="prompt">&gt;</span>
-            <input id="msginput" class="msginput" type="text" autocomplete="off" autofocus />
-            <a id="login-pagebutton" class="button" href="login.html">[Login]</a>
-            <a id="signup-pagebutton" class="button" href="signup.html">[Signup]</a>
-            <a id="logout-button" class="button" href= "login.html">[Logout]</a> 
-        </div>
-    </div>
-    <div id="command-terminal">
-        <div id="command-output"></div>
-        <span class="prompt">&gt;</span>
-        <input type="text" id="command-input" placeholder="Enter command..." autofocus />
+
+    <div class="ascii-container">
+        <pre class="ascii">
+        <span class="torch-flicker">         _o8888888o_</span>
+        <span class="torch-flicker">      .o888'</span> ...  <span class="torch-flicker">'888o.</span>
+        <span class="torch-flicker">   .o88'</span>  :::;(;:::  <span class="torch-flicker">'88o.</span>
+        <span class="torch-flicker">  ,88'</span>  .::;.) );:::.  <span class="torch-flicker">'88,</span>
+        <span class="torch-flicker"> ,88'</span>  :::;`(,' (,;:::  <span class="torch-flicker">'88,</span>
+        <span class="torch-flicker">,88'</span>  :::;;). (, (';:::  <span class="torch-flicker">'88,</span>
+        <span class="torch-flicker">88'</span>   :::;( ) ; ' );;::   <span class="torch-flicker">'88</span>
+        <span class="torch-flicker">88</span>    '::;')_,_)_(`;::'    <span class="torch-flicker">88</span>
+        <span class="torch-flicker">88</span>      '::[_____]::'      <span class="torch-flicker">88</span>
+        <span class="torch-flicker">88</span>          \_ _/          <span class="torch-flicker">88</span>
+        <span class="torch-flicker">88</span>           |#|_          <span class="torch-flicker">88</span>
+        <span class="torch-flicker">88,     __.-'(__ )        ,88</span>
+        <span class="torch-flicker">'88,     '-. \___ )      ,88'</span>
+        <span class="torch-flicker"> '88,     _.\_)__ )     ,88'</span>
+        <span class="torch-flicker">  '88o,  _   (__ )    ,o88'</span>
+        <span class="torch-flicker">    '88o, `'-\#/'   ,o88'</span>
+        <span class="torch-flicker">      '888o,_   _,o888'</span>
+        <span class="torch-flicker">         '8JGS88888'</span>
+        </pre>
     </div>
 
-    <script src="script.js"></script>
+    <div class="main-center">
+    <div class="main-container">
+        <div class="chat-container">
+            <div id="chat-box" class="chat-box" onload="loadMessages()"></div>
+            <div class="input-container">
+                <span class="prompt">&gt;</span>
+                <input id="msginput" class="msginput" type="text" autocomplete="off" autofocus />
+                <a id="login-pagebutton" class="button" href="login.html">[Login]</a>
+                <a id="signup-pagebutton" class="button" href="signup.html">[Signup]</a>
+                <a id="logout-button" class="button" href="login.html">[Logout]</a>
+            </div>
+        </div>
+        <div id="command-terminal">
+            <div id="command-output"></div>
+            <span class="prompt">&gt;</span>
+            <input type="text" id="command-input" placeholder="Enter command..." autofocus />
+        </div>
+
+        <script src="script.js"></script>
+    </div>
+    </div>
 </body>
 
 </html>

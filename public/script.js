@@ -27,14 +27,41 @@ function submit() {
         msg.textContent = 'Log in or Create account to message your friends :)'
     }
     chatbox.appendChild(msg)
-    console.log(user_message)
     user_input.value = ''
 }
 
+function submitComm() {
+    command = document.getElementById('command-input').value.trim();
+    commandOutput = document.getElementById('command-output');
+    const response = document.createElement('div');
+    response.classList.add('message');
+    if (command != '' && command!='clear') {
+        if (command == 'help') {
+            response.innerHTML = `<span>-ls: Show latest conversations</span><br></br><span>-cd [username]: Set current conversation</span><br></br><span>-mkdir [username]: Start new conversation with user</span><br></br>`;
+        }
+        
+        else {
+            response.textContent = 'bash: command_name: command not found'
+
+        }
+        commandOutput.appendChild(response);
+        console.log(response);
+        
+    }
+    else if(command=='clear'){
+        commandOutput.innerHTML=''
+    }
+    document.getElementById('command-input').value = '';
+}
 
 document.getElementById('msginput').addEventListener('keypress', (event) => {
     if (event.key == 'Enter') {
         submit();
+    }
+})
+document.getElementById('command-input').addEventListener('keypress', (event) => {
+    if (event.key == 'Enter') {
+        submitComm();
     }
 })
 
