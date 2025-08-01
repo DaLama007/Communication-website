@@ -1,3 +1,12 @@
+/*const socket=io('http://localhost:3000')
+//on method
+socket.on('welcome', data=>{
+    //emit data
+    console.log(data)
+    socket.emit('thankYou', [4,5,6])
+
+    
+})*/
 function submit() {
     let chatbox = document.getElementById('chat-box');
     let user_input = document.getElementById('msginput');
@@ -30,26 +39,42 @@ function submit() {
     user_input.value = ''
 }
 
+function displayError(errorMessage){
+    errorMessage = errorMessage.trim();
+    commandOutput = document.getElementById('command-output');
+    const response = document.createElement('div');
+    response.innerHTML =`${errorMessage}`
+    commandOutput.appendChild(response);
+
+}
 function submitComm() {
     command = document.getElementById('command-input').value.trim();
     commandOutput = document.getElementById('command-output');
     const response = document.createElement('div');
     response.classList.add('message');
+    splitCommand=command.split(' ')
     if (command != '' && command!='clear') {
         if (command == 'help') {
             response.innerHTML = `<span>-ls: Show latest conversations</span><br></br><span>-cd [username]: Set current conversation</span><br></br><span>-mkdir [username]: Start new conversation with user</span><br></br>`;
         }
-        
+        else if(splitCommand[0]=='mkdir'){
+            otherUser=splitCommand[1];
+            creatNewRoom(otherUser);
+            loadMessages(otherUser);
+        }
+        else if(splitCommand[0]=='cd'){
+            otherUser=splitCommand[1];
+            loadMessages(otherUser);
+        }
         else {
-            response.textContent = 'bash: command_name: command not found'
-
+            response.textContent = 'bash: command_name: command not found';
         }
         commandOutput.appendChild(response);
         console.log(response);
         
     }
     else if(command=='clear'){
-        commandOutput.innerHTML=''
+        commandOutput.innerHTML='';
     }
     document.getElementById('command-input').value = '';
 }
@@ -67,7 +92,7 @@ document.getElementById('command-input').addEventListener('keypress', (event) =>
 
 document.getElementById('logout-button').addEventListener('click', (event) => {
     localStorage.setItem('isLoggedIn', 'false')
-    localStorage.set('username', '')
+    localStorage.setItem('username', '')
 })
 if (localStorage.getItem('isLoggedIn') == 'true') {
     document.getElementById('login-pagebutton').style.display = 'none';
@@ -84,10 +109,12 @@ else {
     document.getElementById('signup-pagebutton').style.display = 'inline';
     document.getElementById('logout-button').style.display = 'none';
 }
-function loadMessages() {
-    return fetch('http://localhost:3000/get-global', {
+function loadMessages(otherUser) {
+    const user1 = localStorage.getItem('username');
+    const user2 = otherUser;
+    return fetch('http://localhost:3000/set-Room', {
         method: 'POST',
-        body: JSON.stringify({}),
+        body: JSON.stringify({username:user1,otherUser:user2}),
         headers: { 'Content-Type': 'application/json' }
     })
         .then(res => res.json())
@@ -111,16 +138,34 @@ function loadMessages() {
 
             }
             else {
-                console.log('Error')
+                displayError('Messages could\'t be fetched.')
             }
 
         })
 }
-function onStart() {
+function creatNewRoom(otherUser){
+    const user1 = localStorage.getItem('username');
+    const user2 = otherUser;
+    return fetch('http://localhost:3000/create-newRoom', {
+        method: 'POST',
+        body: JSON.stringify({username:user1,otherUser:user2}),
+        headers: { 'Content-Type': 'application/json' }
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+
+            }
+            else {
+                displayError('New room couldn\'t be created.')
+            }
+        })
+}
+/*function onStart() {
     loadMessages().then(() => {
         let chatbox = document.getElementById('chat-box');
         chatbox.scrollTop = chatbox.scrollHeight;
     });
 }
 onStart();
-setInterval(loadMessages, 1000);
+setInterval(loadMessages, 1000);*/

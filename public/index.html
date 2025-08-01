@@ -2,10 +2,15 @@
 <html lang="en">
 
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.8/lib/p5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.8/lib/addons/p5.sound.min.js"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Terminal Chat</title>
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    
+
 </head>
 
 <body>
@@ -32,28 +37,32 @@
         <span class="torch-flicker">         '8JGS88888'</span>
         </pre>
     </div>
+    <div id="canvas"></div>
 
     <div class="main-center">
-    <div class="main-container">
-        <div class="chat-container">
-            <div id="chat-box" class="chat-box" onload="loadMessages()"></div>
-            <div class="input-container">
+        <div class="main-container">
+            <div class="chat-container">
+                <div id="chat-box" class="chat-box" onload="loadMessages()"></div>
+                <div class="input-container">
+                    <span class="prompt">&gt;</span>
+                    <input id="msginput" class="msginput" type="text" autocomplete="off" autofocus />
+                    <a id="login-pagebutton" class="button" href="login.html">[Login]</a>
+                    <a id="signup-pagebutton" class="button" href="signup.html">[Signup]</a>
+                    <a id="logout-button" class="button" href="login.html">[Logout]</a>
+                </div>
+            </div>
+            <div id="command-terminal">
+                <div id="command-output"></div>
                 <span class="prompt">&gt;</span>
-                <input id="msginput" class="msginput" type="text" autocomplete="off" autofocus />
-                <a id="login-pagebutton" class="button" href="login.html">[Login]</a>
-                <a id="signup-pagebutton" class="button" href="signup.html">[Signup]</a>
-                <a id="logout-button" class="button" href="login.html">[Logout]</a>
+                <input type="text" id="command-input" placeholder="Enter command..." autofocus />
             </div>
         </div>
-        <div id="command-terminal">
-            <div id="command-output"></div>
-            <span class="prompt">&gt;</span>
-            <input type="text" id="command-input" placeholder="Enter command..." autofocus />
-        </div>
+    </div>
 
-        <script src="script.js"></script>
-    </div>
-    </div>
+    
+    <script src="script.js"></script>
+    <script src="sketch.js"></script>
+
 </body>
 
 </html>
