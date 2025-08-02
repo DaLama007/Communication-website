@@ -44,13 +44,13 @@ db.prepare(`
 
 db.prepare(`
   CREATE TABLE IF NOT EXISTS participants (
-  participant_id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER NOT NULL,
-  room_id INTEGER NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES users(username),
-  FOREIGN KEY (room_id) REFERENCES chatrooms(room_id),
-  UNIQUE (user_id, room_id)
-)
+    participant_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    room_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (room_id) REFERENCES chatrooms(room_id),
+    UNIQUE (user_id, room_id)
+  )
 `).run();
 
 db.prepare(`
@@ -74,11 +74,11 @@ function getMessagesFromRoom(username, otherUsername) {
   const user1 = getUserId.get(username);
   const user2 = getUserId.get(otherUsername);
 
-  if (user1 != null && user2 != null) {
+  if (!user1 || !user2) return null;
 
-    let userId1 = user1.user_id
-    let userId2 = user2.user_id
-    const checkRoom = db.prepare(`
+  let userId1 = user1.user_id
+  let userId2 = user2.user_id
+  const checkRoom = db.prepare(`
     SELECT r.room_id
     FROM chatrooms r
     JOIN participants p1 ON r.room_id = p1.room_id
@@ -86,23 +86,18 @@ function getMessagesFromRoom(username, otherUsername) {
     WHERE p1.user_id = ?
       AND p2.user_id = ?
   `);
-    if (checkRoom.get() != null) {
-      const messages = db.prepare(`SELECT m.room_id
-        FROM messages m
-        JOIN participants p1 ON r.room_id = p1.room_id
-        JOIN participants p2 ON r.room_id = p2.room_id
-        WHERE p1.user_id = ?
-          AND p2.user_id = ? `)
-      messages = messages.all()
-      return messages;
-    }
-    else {
+  const room = checkRoom.get(userId1, userId2);
+  if (!room) return null;
+  const getMessages = db.prepare(`
+    SELECT m.content, m.timestamp, u.username
+    FROM messages m
+    JOIN users u ON m.user_id = u.user_id
+    WHERE m.room_id = ?
+    ORDER BY m.timestamp ASC
+  `);
 
-      return null;
-
-    }
-
-  }
+  const messages = getMessages.all(room.room_id);
+  return messages;
 }
 
 app.post('/login', (req, res) => {
@@ -136,27 +131,37 @@ app.post('/signup', (req, res) => {
     res.json({ success: true });
   }
 });
-app.post('/global', (req, res) => {
-  const { username, content } = req.body;
 
-  const insert = db.prepare('INSERT INTO messages (username, content) VALUES (?, ?)');
-  insert.run(username, content);
-  res.json({ success: true });
-}
-);
-app.post('/get-global', (req, res) => {
 
-  const messages = db.prepare('SELECT * FROM messages').all();
-  res.json({ success: true, messages });
-}
-);
 app.post('/send-privateMessage', (req, res) => {
   const { room_id, username, content } = req.body;
-  const insert = db.prepare(`INSERT INTO messages (room_id,username, content) VALUES (?, ?,?)`);
-  insert.run(room_id, username, content);
+  const user = db.prepare('SELECT user_id FROM users WHERE username = ?').get(username);
+  if (!user) return res.json({ success: false, message: 'User not found' });
+
+  const insert = db.prepare('INSERT INTO messages (user_id, room_id, content) VALUES (?, ?, ?)');
+  insert.run(user.user_id, room_id, content);
 });
 app.post('/create-newRoom', (req, res) => {
-  const { username, otherUsername } = req.body;
+  const { username, otherUsername, isPrivate } = req.body;
+
+  console.log('➡️ /create-newRoom called with:', { username, otherUsername, isPrivate });
+
+  if (!username || !otherUsername) {
+    console.log('❌ Missing usernames');
+    return res.json({ success: false, message: 'Missing usernames' });
+  }
+
+  const getUserId = db.prepare('SELECT user_id FROM users WHERE username = ?');
+  const user1 = getUserId.get(username);
+  const user2 = getUserId.get(otherUsername);
+
+  console.log('🧑‍🤝‍🧑 Fetched user IDs:', user1, user2);
+
+  if (!user1 || !user2) {
+    console.log('❌ One or both users not found');
+    return res.json({ success: false, message: 'User does not exist' });
+  }
+
   const checkRoom = db.prepare(`
     SELECT r.room_id
     FROM chatrooms r
@@ -166,39 +171,40 @@ app.post('/create-newRoom', (req, res) => {
       AND p1.user_id = ?
       AND p2.user_id = ?
   `);
-  //fetch users
-  const getUserId = db.prepare('SELECT user_id FROM users WHERE username = ?');
-  const user1 = getUserId.get(username);
-  const user2 = getUserId.get(otherUsername);
-  //Check if users exist 
-  if (user1 != null && user2 != null) {
-    //create new room
-    const { username, otherUsername, isPrivate } = req.body;
-    const insert = db.prepare('INSERT INTO chatrooms (room_name,is_private) VALUES (?,?)');
-    const result = insert.run(username + '&' + otherUsername, isPrivate);
+  const existingRoom = checkRoom.get(user1.user_id, user2.user_id);
 
-    const roomId = result.lastInsertRowid;
-
-    let userId1 = user1.id
-    let userId2 = user2.id
-    const addParticipant = db.prepare('INSERT INTO participants (user_id, room_id) VALUES (?, ?)');
-    addParticipant.run(userId1, roomId);
-    addParticipant.run(userId2, roomId);
-    res.json({ success: true })
-  }
-  else {
-    res.json({ success: false, message: 'User doers not exist' });
+  if (existingRoom) {
+    console.log('✅ Existing room found:', existingRoom.room_id);
+    return res.json({ success: true, room_id: existingRoom.room_id });
   }
 
+  console.log('🛠 Creating new room...');
+  const insert = db.prepare('INSERT INTO chatrooms (room_name, is_private) VALUES (?, ?)');
+  const result = insert.run(`${username}&${otherUsername}`, isPrivate ? 1 : 0);
+  const roomId = result.lastInsertRowid;
+
+  const addParticipant = db.prepare('INSERT INTO participants (user_id, room_id) VALUES (?, ?)');
+  addParticipant.run(user1.user_id, roomId);
+  addParticipant.run(user2.user_id, roomId);
+
+  console.log('✅ Room created with ID:', roomId);
+
+  return res.json({ success: true, room_id: roomId });
 });
+
 app.post('/set-Room', (req, res) => {
   const { username, otherUsername } = req.body;
-  //function that checks if users exitss and get room messages if it exists
-  messages = getMessagesFromRoom(username, otherUsername);
-  if (messages != null) {
-    res.json({ success: true, messages })
+
+  if (!username || !otherUsername) {
+    return res.json({ success: false, message: 'Missing users' });
   }
-  else {
-    res.json({ success: false, message: 'No messages found' })
+
+  const messages = getMessagesFromRoom(username, otherUsername);
+
+  if (messages) {
+    res.json({ success: true, messages });
+  } else {
+    res.json({ success: false, message: 'Room not found or no messages' });
   }
 });
+

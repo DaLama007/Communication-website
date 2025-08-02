@@ -12,6 +12,7 @@ document.getElementById('login-button').addEventListener('click', (event) => {
         if(data.success){
             localStorage.setItem('username', usernameInput)
             localStorage.setItem('isLoggedIn', 'true')
+            localStorage.setItem('isInChat','false')
             window.location.href = "index.html";
             console.log('user')
         }
