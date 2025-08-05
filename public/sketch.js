@@ -42,7 +42,7 @@ function mouseDragged() {
           
         }
       }
-      hueValue += 1;
+      hueValue += 0.5;
       if (hueValue === 360) {
         hueValue = 0
       }

@@ -14,21 +14,36 @@ app.use(express.static('public'));
 const expressServer = app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
-/*const io = socketio(expressServer, {
+const io = socketio(expressServer, {
   cors: {
     origin: "http://localhost:5500",
     methods: ["GET", "POST"]
   }
 })
-io.on('connect', socket => {
-  console.log(socket.id, 'has joined our server!')
-  //1st arg or emit is the event name
-  socket.emit('welcome', [1, 2, 3])//push event to client/browser
-  //listen to incomming messages
-  socket.on('thankYou', data => {
-    console.log('message from client', data)
-  })
-})*/
+io.on('connection', (socket) => {
+    console.log('🔌 New user connected');
+
+    socket.on('join-room', (roomId) => {
+        socket.join(roomId);
+        console.log(`✅ User joined room ${roomId}`);
+    });
+
+    socket.on('new-message', ({ roomId}) => {
+        // Broadcast to everyone *in that room*, except sender
+        socket.to(roomId).emit('update-messages');
+    });
+});
+
+
+//Uncomment to delete database
+/*db.exec('PRAGMA foreign_keys = OFF'); // Temporarily disable constraint checks
+
+db.exec('DROP TABLE IF EXISTS messages');
+db.exec('DROP TABLE IF EXISTS participants');
+db.exec('DROP TABLE IF EXISTS chatrooms');
+db.exec('DROP TABLE IF EXISTS users');*/
+
+db.exec('PRAGMA foreign_keys = ON');
 
 db.prepare(`
   CREATE TABLE IF NOT EXISTS messages (
@@ -95,9 +110,9 @@ function getMessagesFromRoom(username, otherUsername) {
     WHERE m.room_id = ?
     ORDER BY m.timestamp ASC
   `);
-
+  const room_id=room.room_id
   const messages = getMessages.all(room.room_id);
-  return messages;
+  return {messages,room_id};
 }
 
 app.post('/login', (req, res) => {
@@ -189,21 +204,24 @@ app.post('/create-newRoom', (req, res) => {
 
   console.log('✅ Room created with ID:', roomId);
 
+  const newConversationMessage = db.prepare('INSERT INTO messages (user_id, room_id, content) VALUES (?, ?, ?)');
+  newConversationMessage.run(user1.user_id, roomId, 'has created room.');
   return res.json({ success: true, room_id: roomId });
 });
 
 app.post('/set-Room', (req, res) => {
-  const { username, otherUsername } = req.body;
+  const { username, otherUser } = req.body;
 
-  if (!username || !otherUsername) {
+  if (!username || !otherUser) {
+    console.log('Missing users')
     return res.json({ success: false, message: 'Missing users' });
   }
+  let result= getMessagesFromRoom(username, otherUser);
 
-  const messages = getMessagesFromRoom(username, otherUsername);
-
-  if (messages) {
-    res.json({ success: true, messages });
+  if (result && result.messages) {
+    res.json({ success: true, messages:result.messages ,roomId:result.room_id});
   } else {
+    console.log('No room found for ${room_id}')
     res.json({ success: false, message: 'Room not found or no messages' });
   }
 });
